@@ -1,0 +1,1 @@
+default_app_config = 'dhis2metadata.apps.Dhis2MetadataConfig'

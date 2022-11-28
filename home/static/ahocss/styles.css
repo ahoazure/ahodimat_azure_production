@@ -1,0 +1,94 @@
+body {
+	background: #008dc8 !important;
+}
+#wrapper {
+	margin-top: 10% !important;
+}
+#content {
+	background: white;
+	padding: 25px;
+}
+#content > h2 {
+	font-size: 18px;
+	text-align: center;
+	padding-top: 0;
+}
+.t10 {
+	margin-top: 10px;
+}
+.t20 {
+	margin-top: 20px;
+}
+
+.list-group-item {
+	color: black;
+}
+.todo-completed {
+	text-decoration: line-through;
+	background: green;
+}
+
+footer {
+	margin-top: 20px;
+	color: white;
+}
+
+td > label {
+	margin-top: 15px;
+}
+
+.logo {
+	width: 95%;
+	margin: 20px;
+}
+
+.btn-primary {
+	background-color: #205280;
+	border-color: #205280;
+}
+
+.body_title {
+	color:  #5d4037;
+	text-align:center;
+	font-family: "Trebuchet MS", sans-serif;
+	font-size:30px;
+
+}
+
+.alert-danger {
+    color: #721c24 !important;
+	text-align: center;
+    background-color: #fee0c6 !important;
+    border-color: #f5c6cb !important;
+}
+
+#password-reset-link {
+	text-align:center;
+	font-family: "Trebuchet MS", sans-serif;
+	font-size:18px;
+
+}
+
+a:hover {
+	background-color: #f4a460
+}
+
+input:required:invalid {
+	border-color: #8b0000;
+	border-width: 1px;
+	background-color: #ffffee;
+}
+
+input:required:valid {
+	background-color: #c1ffc1;
+	border-color: #b23aee;
+	border-width: 1px;
+}
+
+.labels {
+	color:  #303030;
+	font-family: "Trebuchet MS", sans-serif;
+	font-size:20px;
+	padding-right:0;
+
+}
