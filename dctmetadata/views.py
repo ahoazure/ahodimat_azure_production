@@ -23,8 +23,9 @@ import json
 import http.client
 import base64
 
+import MySQLdb # drivers for accessing the database through sqlalchemy
 import os # necessary for accessing filesystem from current project
-# import dotenv # necessary for reading .env config files in .config
+
 from .models import (DCTIndicators,DCTLocations,DCT_URLEndpointPath,
         DCT_URLEndpointPathMapped,DCT_Categoryoptions,DCT_Datasource,
         DCT_Measuretype) # add DCTConfigs
@@ -37,21 +38,23 @@ class DCTAPIPathManagementView(viewsets.ReadOnlyModelViewSet):
     serializer_class = DCT_URLEndpointPathMappedSerializer
  
     def get_queryset(self):
-        qs = DCT_URLEndpointPathMapped.objects.filter(status=1) 
-        return qs
-
+        try:
+            qs = DCT_URLEndpointPathMapped.objects.filter(status=1) 
+            return qs
+        except (MySQLdb.IntegrityError, MySQLdb.OperationalError,MySQLdb.IntegrityError):
+            pass
 
 class DCTMetadataManagementView(APIView):
 
     def get(self, request,format=None):
         payload = None
+
         params = DCT_URLEndpointPathMapped.objects.values(
             'id','url','username','password','endpoint','status').get(
                 status=1)
         
         password = security.decrypt(params['password'])    
         authvars = params['username']+":"+password
-        import pdb; pdb.set_trace()	
         
         # Encode DHIS2 user credentials using Base64 Encoding scheme
         encodedBytes = base64.b64encode(authvars.encode("utf-8"))
@@ -72,7 +75,8 @@ class DCTMetadataManagementView(APIView):
             payload = json.loads(response.text) # extract the payload part of the response 
         
         except(IndexError,ValueError,requests.exceptions.RequestException,
-        JSONDecodeError,TypeError):
+            MySQLdb.IntegrityError, MySQLdb.OperationalError,MySQLdb.IntegrityError,
+            JSONDecodeError,TypeError,):
             pass
         return Response(payload)   
 
@@ -168,11 +172,10 @@ class DCTMetadataManagementView(APIView):
                     ) 
                     # import pdb; pdb.set_trace()	
 
-        except(IndexError,ValueError,requests.exceptions.RequestException,
-        JSONDecodeError,TypeError):
+        except(IndexError,ValueError,requests.exceptions.RequestException,JSONDecodeError,
+            TypeError,MySQLdb.IntegrityError, MySQLdb.OperationalError,MySQLdb.IntegrityError):
             pass
         return payload
-
 
     def mediators_dct_metadata(self): 
         metadata= self._dct_save_metadata() 
