@@ -58,10 +58,10 @@ def start(): ## Add  jobs here using cron trigger instead of to interval.
 
         scheduler.add_job(fact_indicators.get_dhis_indicatorfacts,'cron',minute='*/3',
           jitter=40,id='Import DHIS2 Indicator Facts',replace_existing=True)    
-        scheduler.add_job(fact_indicators.post_dctfact_indicators,'cron',minute='*/50',
+        scheduler.add_job(fact_indicators.post_dctfact_indicators,'cron',minute='*/5',
           jitter=60,id='Export Mapped DHIS2 Facts to DCT',replace_existing=True)
 
-        scheduler.add_job(post_facts.post_ghofact_indicators,'cron',minute='*/6',
+        scheduler.add_job(post_facts.post_ghofact_indicators,'cron',minute='*/59',
           jitter=60,id='Export GHO Mapped Facts to DCT',replace_existing=True)
 
         register_events(scheduler) # Add scheduled jobs to the admin interface   
