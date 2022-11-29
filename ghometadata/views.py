@@ -24,7 +24,9 @@ import json
 import http.client
 import base64
 
-import os # necessary for accessing filesystem from current project
+import os # for accessing filesystem from current project
+import MySQLdb # drivers for accessing the database exceptions
+
 # import dotenv # necessary for reading .env config files in .config
 from .models import (GHOIndicators,GHOSpatialDimensionCountries,
     GHO_URLEndpointPath,GHO_URLEndpointPathMapped,GHOAPIConfigs)
@@ -36,12 +38,13 @@ class DCTAPIPathManagementView(viewsets.ReadOnlyModelViewSet):
     serializer_class = GHO_URLEndpointPathMappedSerializer
  
     def get_queryset(self):
-        qs = GHO_URLEndpointPathMapped.objects.filter(status=1) 
-        return qs
-
+        try:
+            qs = GHO_URLEndpointPathMapped.objects.filter(status=1) 
+            return qs
+        except (MySQLdb.IntegrityError, MySQLdb.OperationalError,):
+            pass
 
 class GHOMetadataManagementView(APIView):
-
     def get(self, request,format=None):
         payload = None
         params = GHO_URLEndpointPathMapped.objects.values(
@@ -75,8 +78,8 @@ class GHOMetadataManagementView(APIView):
             # import pdb; pdb.set_trace()	
             payload = json.loads(response.text) # extract the payload part of the response 
         
-        except(IndexError,ValueError,requests.exceptions.RequestException,
-        JSONDecodeError,TypeError):
+        except(IndexError,ValueError,requests.exceptions.RequestException,TypeError,
+            JSONDecodeError,MySQLdb.IntegrityError, MySQLdb.OperationalError):
             pass
         return Response(payload)   
 
@@ -131,11 +134,10 @@ class GHOMetadataManagementView(APIView):
                         language = child['Language'],
                     ) 
 
-        except(IndexError,ValueError,requests.exceptions.RequestException,
-        JSONDecodeError,TypeError):
+        except(IndexError,ValueError,requests.exceptions.RequestException,TypeError,
+            JSONDecodeError,MySQLdb.IntegrityError, MySQLdb.OperationalError):
             pass
         return payload
-
 
     def mediators_gho_metadata(self): 
         metadata= self._gho_save_metadata() 

@@ -24,6 +24,8 @@ import http.client
 import base64
 
 import os # necessary for accessing filesystem from current project
+import MySQLdb # drivers for accessing the database exceptions
+
 from dctmetadata.models import (DCT_URLEndpointPathMapped,)
 from ghometadata.models import (GHOIndicators,GHOSpatialDimensionCountries,
     GHO_URLEndpointPath,GHO_URLEndpointPathMapped,GHOAPIConfigs)
@@ -35,7 +37,6 @@ from .serializers import (FactGHODataIndicatorSerializer,)
 class FactGHODataIndicatorViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = FactsGHO_IndicatorsViewMapped.objects.all()
     serializer_class = FactGHODataIndicatorSerializer
-
 
     def post_ghofact_indicators(self):
         payload = None # initialize DCT payload
@@ -66,7 +67,7 @@ class FactGHODataIndicatorViewSet(viewsets.ReadOnlyModelViewSet):
               payload = json.loads(response.text)
               data=self.mediators_post_gho_indicator_facts(dct_dataurl,payload,headers)         
               return Response(payload)                  
-            except (IndexError,ValueError):
+            except (MySQLdb.IntegrityError,MySQLdb.OperationalError,IndexError,ValueError):
                pass
         return Response(payload)	
 
@@ -134,11 +135,10 @@ class GHOIndicatiorFactsManagementView(APIView):
                         end_period= child['TimeDimensionEnd'].split('T')[0],                      
                         period = child['TimeDim'],                                    
                     )
-        except(IndexError,ValueError,requests.exceptions.RequestException,
-        JSONDecodeError,TypeError):
+        except(IndexError,ValueError,requests.exceptions.RequestException,JSONDecodeError,
+            TypeError,MySQLdb.OperationalError,MySQLdb.IntegrityError):
             pass
         return payload
-
 
     def mediators_gho_save_dataset(self):
         dataset= self._gho_save_datasets() 

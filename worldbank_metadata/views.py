@@ -21,7 +21,7 @@ def load_wordbank_indicators(request):
         ]
         records = WorldBankIndicators.objects.bulk_create(
             indicators,ignore_conflicts=True,) 
-    except(MySQLdb.IntegrityError, MySQLdb.OperationalError) as e:
+    except(MySQLdb.IntegrityError, MySQLdb.OperationalError,) as e:
         pass 
     except: # ignore othe database related errors
         print('Unknown Error has occured') 

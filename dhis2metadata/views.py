@@ -22,6 +22,8 @@ import http.client
 import base64
 
 import os # necessary for accessing filesystem from current project
+import MySQLdb # drivers for accessing the database exceptions
+
 # import dotenv # necessary for reading .env config files in .config
 from .models import (DHIS2Indicators,OrganizationUnits,PeriodType,
     DHIS2_URLEndpointPath,DHIS2_URLEndpointPathMapped)# add DHIS2Configs
@@ -34,9 +36,11 @@ class DHIS2APIPathManagementView(viewsets.ReadOnlyModelViewSet):
     serializer_class = DHIS2_URLEndpointPathMappedSerializer
  
     def get_queryset(self):
-        qs = DHIS2_URLEndpointPathMapped.objects.filter(status=1) 
-        return qs
-
+        try: 
+            qs = DHIS2_URLEndpointPathMapped.objects.filter(status=1) 
+            return qs
+        except (MySQLdb.IntegrityError, MySQLdb.OperationalError,):
+            pass
 
 class DHIS2MetadataManagementView(APIView):
 
@@ -67,8 +71,8 @@ class DHIS2MetadataManagementView(APIView):
             # import pdb; pdb.set_trace()	
             payload = json.loads(response.text) # extract the payload part of the response 
         
-        except(IndexError,ValueError,requests.exceptions.RequestException,
-        JSONDecodeError,TypeError):
+        except(IndexError,ValueError,requests.exceptions.RequestException,TypeError,
+            JSONDecodeError,MySQLdb.IntegrityError, MySQLdb.OperationalError,):
             pass
         return Response(payload)    
 
@@ -83,8 +87,8 @@ class DHIS2MetadataManagementView(APIView):
             response = requests.request("GET", mediatorurl)
             if response.status_code==200:
                 payload = json.loads(response.text)                      
-        except (requests.exceptions.RequestException,JSONDecodeError,
-            TypeError) as e:
+        except (requests.exceptions.RequestException,JSONDecodeError,TypeError,
+            MySQLdb.IntegrityError, MySQLdb.OperationalError) as e:
             pass
         return payload
 
@@ -92,13 +96,15 @@ class DHIS2MetadataManagementView(APIView):
     def mediators_save_indicators(self):
         dhis2_data = self._get_dhis2_indicators()
         if dhis2_data:
-            for child in dhis2_data['indicators']: #iterate to display all objects in the json array
-                indicators = DHIS2Indicators.objects.update_or_create(
-                uid = child['id'],					
-                # code = child['code'],	
-                name = child['name'],)
-            return indicators
-
+            try:
+                for child in dhis2_data['indicators']: #iterate to display all objects in the json array
+                    indicators = DHIS2Indicators.objects.update_or_create(
+                    uid = child['id'],					
+                    # code = child['code'],	
+                    name = child['name'],)
+                return indicators
+            except (MySQLdb.IntegrityError, MySQLdb.OperationalError,):
+                pass
 
     def _dhis_save_metadata(self):
         payload = None
@@ -126,8 +132,6 @@ class DHIS2MetadataManagementView(APIView):
                 response = requests.request("GET",dhisurl,data=payload,headers=headers)
                 payload = json.loads(response.text)               
                 
-                # import pdb; pdb.set_trace()	
-
                 for child in payload['organisationUnits']: #iterate to display all objects in the json array
                     # import pdb; pdb.set_trace()	
                     organization = OrganizationUnits.objects.update_or_create(
@@ -146,11 +150,10 @@ class DHIS2MetadataManagementView(APIView):
                         # code = child['code'],	
                         name = child['name'],
                     )
-        except(IndexError,ValueError,requests.exceptions.RequestException,
-        JSONDecodeError,TypeError):
+        except(IndexError,ValueError,requests.exceptions.RequestException,TypeError,
+            JSONDecodeError,MySQLdb.IntegrityError, MySQLdb.OperationalError):
             pass
         return payload
-
 
     def mediators_dhis_metadata(self): 
         metadata= self._dhis_save_metadata() 

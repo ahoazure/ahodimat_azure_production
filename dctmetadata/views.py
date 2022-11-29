@@ -22,16 +22,14 @@ from time import sleep
 import json
 import http.client
 import base64
-
-import MySQLdb # drivers for accessing the database through sqlalchemy
-import os # necessary for accessing filesystem from current project
-
-from .models import (DCTIndicators,DCTLocations,DCT_URLEndpointPath,
+ 
+import os # for accessing filesystem from current project
+import MySQLdb # drivers for accessing the database exceptions
+from . models import (DCTIndicators,DCTLocations,DCT_URLEndpointPath,
         DCT_URLEndpointPathMapped,DCT_Categoryoptions,DCT_Datasource,
         DCT_Measuretype) # add DCTConfigs
 from . serializers import (DCT_URLEndpointPathMappedSerializer,)
 from authentication.models import MediatorConfigs # import server settings
-
 
 
 class DCTAPIPathManagementView(viewsets.ReadOnlyModelViewSet):
@@ -41,7 +39,7 @@ class DCTAPIPathManagementView(viewsets.ReadOnlyModelViewSet):
         try:
             qs = DCT_URLEndpointPathMapped.objects.filter(status=1) 
             return qs
-        except (MySQLdb.IntegrityError, MySQLdb.OperationalError,MySQLdb.IntegrityError):
+        except (MySQLdb.IntegrityError, MySQLdb.OperationalError,):
             pass
 
 class DCTMetadataManagementView(APIView):
@@ -74,9 +72,8 @@ class DCTMetadataManagementView(APIView):
             # import pdb; pdb.set_trace()	
             payload = json.loads(response.text) # extract the payload part of the response 
         
-        except(IndexError,ValueError,requests.exceptions.RequestException,
-            MySQLdb.IntegrityError, MySQLdb.OperationalError,MySQLdb.IntegrityError,
-            JSONDecodeError,TypeError,):
+        except(IndexError,ValueError,requests.exceptions.RequestException,TypeError,
+            MySQLdb.IntegrityError, MySQLdb.OperationalError,JSONDecodeError,):
             pass
         return Response(payload)   
 
@@ -173,7 +170,7 @@ class DCTMetadataManagementView(APIView):
                     # import pdb; pdb.set_trace()	
 
         except(IndexError,ValueError,requests.exceptions.RequestException,JSONDecodeError,
-            TypeError,MySQLdb.IntegrityError, MySQLdb.OperationalError,MySQLdb.IntegrityError):
+            TypeError,MySQLdb.OperationalError,MySQLdb.IntegrityError):
             pass
         return payload
 

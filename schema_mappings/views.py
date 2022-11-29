@@ -6,8 +6,6 @@ from django.shortcuts import render
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 
-import MySQLdb # drivers for accessing the database through sqlalchemy
-
 from rest_framework.views import APIView
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
@@ -30,6 +28,7 @@ from openhim_mediator_utils.main import Main
 from time import sleep
 
 import os # necessary for accessing filesystem from current project
+import MySQLdb # drivers for accessing the database exceptions
 import dotenv # necessary for reading .env config files in .config
 
 from dctmetadata.models import (DCTIndicators,DCTLocations,
@@ -88,8 +87,6 @@ class FactDataIndicatorViewSet(viewsets.ReadOnlyModelViewSet):
             params = FactsDHIS2_QueryParametersMapped.objects.values(
                 'pt','dx','ou','dct_indicator','periodname',
                 'startDate','endDate').get(status=1) 
-
-            # import pdb; pdb.set_trace()	
         
             param_id=params['pt']# Considered when determining DHIS2 endpoint to consume	
             param_dx=params['dx']# Considered when adding indicator uid to the endpoint
@@ -215,7 +212,6 @@ class FactDataIndicatorViewSet(viewsets.ReadOnlyModelViewSet):
                 IndexError,ValueError):
                pass
         return Response(payload)	
-
 
     """
     This method receives data from the mediator URL fact table-view and transforms the array of
