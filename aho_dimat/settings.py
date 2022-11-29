@@ -101,6 +101,7 @@ DATABASES = {
         'HOST': os.environ['DBHOST'],
         'USER': os.environ['DBUSER'],
         'PASSWORD': os.environ['DBPASS'],
+        'CONN_MAX_AGE':None,
         'OPTIONS': {
             'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
             'init_command': 'SET storage_engine=INNODB;',

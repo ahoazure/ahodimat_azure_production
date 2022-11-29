@@ -279,7 +279,8 @@ class FactDataIndicatorViewSet(viewsets.ReadOnlyModelViewSet):
     def mediators_post_gho_indicator_facts(self,dct_dataurl,facts,headers):
         payload = None # initialize post payload
         for items in facts:
-            if items['status']=='approved':
+            if items['status']=='approved': # NB: facts in DIMAT must be approved before exporting to DCT 
                 response = requests.post(dct_dataurl,data=items,headers=headers)
                 payload = response.text
+                print(payload)
         return payload
