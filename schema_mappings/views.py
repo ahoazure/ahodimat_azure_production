@@ -6,6 +6,8 @@ from django.shortcuts import render
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 
+import MySQLdb # drivers for accessing the database through sqlalchemy
+
 from rest_framework.views import APIView
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
@@ -127,7 +129,8 @@ class FactDataIndicatorViewSet(viewsets.ReadOnlyModelViewSet):
             
             self.save_dhis2_indicatorfacts(payload,indicator_id,location_id,params) # call the save method
     
-        except (IndexError,ValueError,IntegrityError) as e: 
+        except (MySQLdb.IntegrityError, MySQLdb.OperationalError,MySQLdb.IntegrityError,
+            IndexError,ValueError) as e: 
             pass       
         return Response(payload)	               		   
    
@@ -168,7 +171,8 @@ class FactDataIndicatorViewSet(viewsets.ReadOnlyModelViewSet):
                             numerator_value=item[4],
                             denominator_value=item[5],
                         )
-                except (IntegrityError,IndexError,ValueError): 
+                except (MySQLdb.IntegrityError, MySQLdb.OperationalError,MySQLdb.IntegrityError,
+                    IndexError,ValueError): 
                     pass # ignore duplicates,index out of range and missing values
 
 
@@ -202,14 +206,13 @@ class FactDataIndicatorViewSet(viewsets.ReadOnlyModelViewSet):
               payload = json.loads(response.text)
               
             #   import pdb; pdb.set_trace()	
-
-              
               data=self.mediators_post_factindicators(dct_dataurl,payload,headers) 
               print(data) 
             #   import pdb; pdb.set_trace()	
        
               return Response(payload)                  
-            except (IndexError,ValueError):
+            except (MySQLdb.IntegrityError, MySQLdb.OperationalError,MySQLdb.IntegrityError,
+                IndexError,ValueError):
                pass
         return Response(payload)	
 
@@ -266,7 +269,8 @@ class FactDataIndicatorViewSet(viewsets.ReadOnlyModelViewSet):
 
               data=self.mediators_post_gho_indicator_facts(dct_dataurl,payload,headers)         
               return Response(payload)                  
-            except (IndexError,ValueError):
+            except (MySQLdb.IntegrityError, MySQLdb.OperationalError,MySQLdb.IntegrityError,
+                IndexError,ValueError):
                pass
         return Response(payload)	
 
