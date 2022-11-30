@@ -47,7 +47,7 @@ def start(): ## Add  jobs here using cron trigger instead of to interval.
   
         scheduler.add_job(dct_meta.mediators_dct_metadata,'cron',minute='*/30',
           jitter=30,id='Import DCT Metadata',replace_existing=True) 
-        scheduler.add_job(dhis_meta.mediators_dhis_metadata,'cron',minute='*/15',
+        scheduler.add_job(dhis_meta.mediators_dhis_metadata,'cron',minute='*/2',
           jitter=20,id='Import DHIS2 Metadata',replace_existing=True)
         
         scheduler.add_job(gho_meta.mediators_gho_metadata,'cron',minute='*/55',

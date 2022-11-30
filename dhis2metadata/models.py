@@ -84,7 +84,7 @@ class OrganizationUnits(models.Model):
     uid = models.CharField(unique=True,max_length=45,
          verbose_name ='OrgUnit UID')
     code = models.CharField(max_length=45,blank=True,null=True,
-        verbose_name ='Orgunit Code')
+        verbose_name ='Orgunit Code',default=None)
     name = models.CharField(max_length=255,blank=True,
         null=True,verbose_name ='Country Name')
 

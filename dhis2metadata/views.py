@@ -136,7 +136,7 @@ class DHIS2MetadataManagementView(APIView):
                     # import pdb; pdb.set_trace()	
                     organization = OrganizationUnits.objects.update_or_create(
                         uid = child['id'],					
-                        code = child['code'],
+                        # code = child['code'],
                         name = child['name'],
                     )       
             elif 'indicators' in params['endpoint']:
