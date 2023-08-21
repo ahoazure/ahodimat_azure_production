@@ -43,7 +43,7 @@ DATABASES = {
         'OPTIONS': {
             'init_command':"SET sql_mode='STRICT_TRANS_TABLES'",
             'init_command':'SET storage_engine=INNODB;',            
-            'ssl': {'ca':'/home/site/cert/BaltimoreCyberTrustRoot.crt.pem'}
+            'ssl': {'ca':'/home/site/cert/BaltimoreTrustDigiCertifcateCombo.pem'} # Replaced with new combo certificate
             },
     }
 }
