@@ -1,9 +1,0 @@
-DBENGINE=django.db.backends.mysql
-DBNAME=ahodimat_ghoapi_database
-DBUSER=root
-DBPASS=Aho@1234
-DBHOST=localhost
-
-SECRET_KEY=1$r75l#3$w%zxnqb1nt$ihs)9fj%5u9h&okt(ns707xm*(h)m6
-ENCRYPT_KEY=eGJALDIEIKk4AjAguFpQ2y6T0WG18wH6jlJM6jNPqDw=
-
