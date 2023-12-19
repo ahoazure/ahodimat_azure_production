@@ -19,7 +19,7 @@ SECRET_KEY = os.environ['SECRET_KEY']
 ENCRYPT_KEY = os.environ['ENCRYPT_KEY']
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ['af-aho-dataintegration.azurewebsites.net',
         'af-aho-dataintegration-stage.azurewebsites.net',
