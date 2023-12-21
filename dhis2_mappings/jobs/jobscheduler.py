@@ -45,7 +45,7 @@ def start(): ## Add  jobs here using cron trigger instead of to interval.
         post_facts = facts()
 
   
-        scheduler.add_job(dct_meta.mediators_dct_metadata,'cron',minute='*/30',
+        scheduler.add_job(dct_meta.mediators_dct_metadata,'cron',minute='*/20',
           jitter=30,id='Import DCT Metadata',replace_existing=True) 
         scheduler.add_job(dhis_meta.mediators_dhis_metadata,'cron',minute='*/40',
           jitter=20,id='Import DHIS2 Metadata',replace_existing=True)
@@ -53,16 +53,16 @@ def start(): ## Add  jobs here using cron trigger instead of to interval.
         scheduler.add_job(gho_meta.mediators_gho_metadata,'cron',minute='*/35',
           jitter=30,id='Import GHO Metadata',replace_existing=True)
 
-        scheduler.add_job(gho_facts.mediators_gho_save_dataset,'cron',minute='*/1',
+        scheduler.add_job(gho_facts.mediators_gho_save_dataset,'cron',minute='*/50',
           jitter=30,id='Import GHO Indicator Facts',replace_existing=True)
 
         scheduler.add_job(fact_indicators.get_dhis_indicatorfacts,'cron',minute='*/45',
-          jitter=60,id='Import DHIS2 Indicator Facts',replace_existing=True)    
+          jitter=30,id='Import DHIS2 Indicator Facts',replace_existing=True)    
         
-        scheduler.add_job(fact_indicators.post_dctfact_indicators,'cron',minute='*/55',
+        scheduler.add_job(fact_indicators.post_dctfact_indicators,'cron',minute='*/25',
           jitter=30,id='Export Mapped DHIS2 Facts to DCT',replace_existing=True)
 
-        scheduler.add_job(post_facts.post_ghofact_indicators,'cron',minute='*/59',
+        scheduler.add_job(post_facts.post_ghofact_indicators,'cron',minute='*/55',
           jitter=60,id='Export GHO Mapped Facts to DCT',replace_existing=True)
 
         register_events(scheduler) # Add scheduled jobs to the admin interface   
