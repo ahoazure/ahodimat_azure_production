@@ -9,10 +9,9 @@ from datetime import timedelta
 import datetime
 
 from authentication.models import CustomUser
-# from mainconfigs.models import DHIS2UserLocation
 
 
-class GHOAPIConfigs(models.Model):   
+class GHOMainConfigs(models.Model):   
     CHOICES=((1,"Active"),(0,"Innactive"))
     url_regex = RegexValidator(
         regex=r'https?:\/\/(?:w{1,3}\.)?[^\s.]+(?:\.[a-z]+)*(?::\d+)?(?![^<]*(?:<\/\w+>|\/?>))',
@@ -32,12 +31,19 @@ class GHOAPIConfigs(models.Model):
     
     class Meta:
         managed = True
-        db_table = 'gho_odatapi_configs'
-        verbose_name = 'URL Setup'
-        verbose_name_plural = ' GHO Base URL'
+        db_table = 'gho_main_configs'
+        verbose_name = 'GHO Setup'
+        verbose_name_plural = ' GHO Settings'
         
     def __str__(self):
         return "%s" %(self.gho_url)
+    
+
+    def clean(self):
+        if (self.gho_url.endswith('/')):
+            raise ValidationError({'dhis2_url':_(
+                'Invalid Base URL. A valid GHO Base URL should NOT have a \
+                    forward slash (/) at the end!')}) 
 
 
 class GHOSpatialDimensionCountries(models.Model):
@@ -76,8 +82,8 @@ class GHOIndicators(models.Model):
     class Meta:
         managed = True
         db_table = 'gho_indicators'
-        verbose_name = 'Indicator'
-        verbose_name_plural = 'Indicators'
+        verbose_name = 'GHO Indicator'
+        verbose_name_plural = 'GHO Indicators'
         ordering = ('name',)
     
     def __str__(self):
@@ -87,7 +93,7 @@ class GHOIndicators(models.Model):
 class GHO_URLEndpointPath(models.Model):
     CHOICES=((1,"Active"),(0,"Innactive"))
     id = models.AutoField(primary_key=True)   
-    url = models.ForeignKey(GHOAPIConfigs, models.CASCADE,
+    url = models.ForeignKey(GHOMainConfigs, models.CASCADE,
         verbose_name = 'GHO Base URL')
     api_endpoint = models.CharField(verbose_name='Resource API Endpoint',
         max_length=250,blank=True,null=False)
@@ -101,9 +107,9 @@ class GHO_URLEndpointPath(models.Model):
 
     class Meta:
         managed = True
-        db_table = 'ghoapi_path_endpoint'
-        verbose_name = ' Endpoint'
-        verbose_name_plural = 'Map Endpoints'
+        db_table = 'gho_api_endpoint'
+        verbose_name = ' Map API'
+        verbose_name_plural = 'Map APIs'
         ordering = ('url',)
 
     def __str__(self):
@@ -111,6 +117,10 @@ class GHO_URLEndpointPath(models.Model):
 
 
     def clean(self):
+        if not (self.api_endpoint.startswith('/')):
+            raise ValidationError({'api_endpoint':_(
+                'Invalid API Endpoint! A valid endpoint must start with a forward slash (/)')})    
+
         if self.status:
             active = GHO_URLEndpointPath.objects.filter(status=1)
             if self.pk:
@@ -133,7 +143,7 @@ class GHO_URLEndpointPathMapped(models.Model):
 
     class Meta:
         managed = False
-        db_table = 'vw_ghoapi_odata_endpoint'
-        verbose_name = 'Mapped Endpoint'
-        verbose_name_plural = 'Mapped Endpoints'
+        db_table = 'vw_gho_mapped_api_endpoint'
+        verbose_name = 'Mapped GHO API'
+        verbose_name_plural = 'Mapped GHO API'
         ordering = ('url',)

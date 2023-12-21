@@ -43,7 +43,6 @@ class DHIS2APIPathManagementView(viewsets.ReadOnlyModelViewSet):
             pass
 
 class DHIS2MetadataManagementView(APIView):
-
     def get(self, request,format=None):
         payload = None
         params = DHIS2_URLEndpointPathMapped.objects.values(
@@ -70,7 +69,8 @@ class DHIS2MetadataManagementView(APIView):
             response = requests.request("GET",dhisurl,data=payload,headers=headers)	
             # import pdb; pdb.set_trace()	
             payload = json.loads(response.text) # extract the payload part of the response 
-        
+            
+
         except(IndexError,ValueError,requests.exceptions.RequestException,TypeError,
             JSONDecodeError,MySQLdb.IntegrityError, MySQLdb.OperationalError,):
             pass
@@ -95,6 +95,7 @@ class DHIS2MetadataManagementView(APIView):
 
     def mediators_save_indicators(self):
         dhis2_data = self._get_dhis2_indicators()
+        
         if dhis2_data:
             try:
                 for child in dhis2_data['indicators']: #iterate to display all objects in the json array
@@ -119,6 +120,10 @@ class DHIS2MetadataManagementView(APIView):
             encodedBytes = base64.b64encode(authvars.encode("utf-8"))
             encodedStr = str(encodedBytes, "utf-8")
             auth_dhis2 = "Basic " + encodedStr
+
+
+            # import pdb; pdb.set_trace()	
+
             headers = { # modified headers to pass tenant header specific to MIFOS
                 'Authorization': auth_dhis2,
                 'Accept': "application/json",
@@ -131,9 +136,8 @@ class DHIS2MetadataManagementView(APIView):
                 dhisurl = params['url']+params['endpoint']
                 response = requests.request("GET",dhisurl,data=payload,headers=headers)
                 payload = json.loads(response.text)               
-                
+                               
                 for child in payload['organisationUnits']: #iterate to display all objects in the json array
-                    # import pdb; pdb.set_trace()	
                     organization = OrganizationUnits.objects.update_or_create(
                         uid = child['id'],					
                         # code = child['code'],

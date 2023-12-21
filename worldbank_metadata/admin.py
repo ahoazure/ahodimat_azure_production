@@ -3,10 +3,10 @@ from django.contrib import admin
 
 from django.forms import TextInput,Textarea 
 from import_export.admin import ImportExportModelAdmin
-from .models import (WBGAPIConfigs,WorldBankIndicators,WorldBankCountries)
+from .models import (WBGMainConfigs,WorldBankIndicators,WorldBankCountries)
 
 
-@admin.register(WBGAPIConfigs)
+@admin.register(WBGMainConfigs)
 class WorldBankConfigAdmin(ImportExportModelAdmin):
     from django.db import models
     formfield_overrides = {

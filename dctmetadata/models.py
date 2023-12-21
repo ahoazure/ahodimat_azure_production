@@ -3,12 +3,10 @@ from django.core.validators import RegexValidator
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
 from utilities import security # used to encrypt sensitive passwords
-
-# from mainconfigs.models import DHIS2UserLocation 
 from authentication.models import CustomUser
 
 
-class DCTConfigs(models.Model):   
+class DCTMainConfigs(models.Model):   
     CHOICES=((1,"Active"),(0,"Innactive"))
     url_regex = RegexValidator(
         regex=r'https?:\/\/(?:w{1,3}\.)?[^\s.]+(?:\.[a-z]+)*(?::\d+)?(?![^<]*(?:<\/\w+>|\/?>))',
@@ -26,9 +24,9 @@ class DCTConfigs(models.Model):
     
     class Meta:
         managed = True
-        db_table = 'ahodct_configs'
+        db_table = 'dct_main_configs'
         verbose_name = 'DCT Setup'
-        verbose_name_plural = 'DCT Settings'
+        verbose_name_plural = 'Main Settings'
         
     def __str__(self):
         return "%s " %(self.dct_url)
@@ -37,13 +35,19 @@ class DCTConfigs(models.Model):
         password = security.encrypt(self.dct_passkey)
         return password
 
+    def clean(self):
+        if (self.dct_url.endswith('/')):
+            raise ValidationError({'dct_url':_(
+                'Invalid Base URL. A valid DCT URL should NOT have a \
+                    forward slash (/) at the end!')}) 
+        
 
     # Override Save method to store only one instance
     def save(self, *args, **kwargs):
         self.dct_passkey = self.encrypt_password()
         if self.__class__.objects.count():
             self.pk = self.__class__.objects.first().pk
-        super(DCTConfigs, self).save(*args, **kwargs)
+        super(DCTMainConfigs, self).save(*args, **kwargs)
 
 
 
@@ -62,8 +66,8 @@ class DCTIndicators(models.Model):
     class Meta:
         managed = True
         db_table = 'dct_indicators'
-        verbose_name = 'Indicator'
-        verbose_name_plural = 'Indicators'
+        verbose_name = 'DDCT Indicator'
+        verbose_name_plural = ' Indicators'
         ordering = ('name',)
     
     def __str__(self):
@@ -85,9 +89,9 @@ class DCTLocations(models.Model):
 
     class Meta:
         managed = True
-        db_table = 'afro_locations'
-        verbose_name = 'Location'
-        verbose_name_plural = 'Locations'
+        db_table = 'dct_afro_locations'
+        verbose_name = 'DCT Location'
+        verbose_name_plural = ' Locations'
         ordering = ('id',)
 
     def __str__(self):
@@ -110,7 +114,7 @@ class DCT_Categoryoptions(models.Model):
         managed = True
         db_table = 'dct_categoryoptions'
         verbose_name = 'Category Option'
-        verbose_name_plural = 'Category Options'
+        verbose_name_plural = ' Category Options'
         ordering = ('name',)
     
     def __str__(self):
@@ -132,7 +136,7 @@ class DCT_Datasource(models.Model):
         managed = True
         db_table = 'dct_datasource'
         verbose_name = 'Data Source'
-        verbose_name_plural = 'Data Sources'
+        verbose_name_plural = ' Data Sources'
         ordering = ('name',)
     
     def __str__(self):
@@ -152,9 +156,9 @@ class DCT_Measuretype(models.Model):
 
     class Meta:
         managed = True
-        db_table = 'dct_indicator_measuretype'
+        db_table = 'dct_measuretype'
         verbose_name = 'Measure Type'
-        verbose_name_plural = 'Measure Types'
+        verbose_name_plural = ' Measure Types'
         ordering = ('name',)
     
     def __str__(self):
@@ -164,7 +168,7 @@ class DCT_Measuretype(models.Model):
 class DCT_URLEndpointPath(models.Model):
     CHOICES=((1,"Active"),(0,"Innactive"))
     id = models.AutoField(primary_key=True)   
-    url = models.ForeignKey(DCTConfigs, models.CASCADE,
+    url = models.ForeignKey(DCTMainConfigs, models.CASCADE,
         verbose_name = 'DCT URL')
     api_endpoint = models.CharField(verbose_name='API Endpoint',
         max_length=250,blank=True,null=False)
@@ -178,9 +182,9 @@ class DCT_URLEndpointPath(models.Model):
 
     class Meta:
         managed = True
-        db_table = 'dct_path_endpoint'
-        verbose_name = 'Map Endpoint:'
-        verbose_name_plural = 'Map Endpoints'
+        db_table = 'dct_api_endpoint'
+        verbose_name = 'DCT API Endpoint:'
+        verbose_name_plural = '   API Endpoints'
         ordering = ('url',)
 
     def __str__(self):
@@ -188,13 +192,16 @@ class DCT_URLEndpointPath(models.Model):
 
 
     def clean(self):
+        if not (self.api_endpoint.startswith('/')):
+            raise ValidationError({'api_endpoint':_(
+                'Invalid API Endpoint! A valid endpoint must start with a forward slash (/)')})    
+        
         if self.status:
             active = DCT_URLEndpointPath.objects.filter(status=1)
             if self.pk:
                 active = active.exclude(pk=self.pk)
             if active.exists():
                 raise ValidationError("Only one record can be active at a time")
-
 
 class DCT_URLEndpointPathMapped(models.Model):
     id = models.AutoField(primary_key=True,verbose_name ='Path ID',)
@@ -211,6 +218,6 @@ class DCT_URLEndpointPathMapped(models.Model):
         managed = False
         db_table = 'vw_dct_apipath_endpoint'
         verbose_name = 'Mapped Endpoint'
-        verbose_name_plural = 'Mapped Endpoints'
+        verbose_name_plural = 'Mapped APIs'
         ordering = ('url',)
         

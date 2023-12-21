@@ -144,7 +144,6 @@ class DHIS2DCTLocationsAdmin(ImportExportModelAdmin):
 
 
 
-
 @admin.register(DHIS2DCT_IndicatorsMapped)
 class DHIS2DCTIndicatorssAdmin(ImportExportModelAdmin):
     from django.db import models

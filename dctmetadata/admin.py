@@ -4,9 +4,9 @@ from import_export.admin import ImportExportModelAdmin
 from .models import (DCTIndicators,DCTLocations,
     DCT_URLEndpointPath,DCT_URLEndpointPathMapped,
     DCT_Categoryoptions,DCT_Datasource,
-    DCT_Measuretype,DCTConfigs)
+    DCT_Measuretype,DCTMainConfigs)
 
-@admin.register(DCTConfigs)
+@admin.register(DCTMainConfigs)
 class ConfigAdmin(ImportExportModelAdmin):
     from django.db import models
    

@@ -56,7 +56,7 @@ class FactsDHIS2_Indicators(models.Model):
 
     class Meta:
         managed = True
-        db_table = 'fact_indicator_analytics'
+        db_table = 'dhis2_indicator_facts'
         unique_together = ('indicator','location','period') #enforces concatenated unique constraint
         verbose_name = 'Fact'
         verbose_name_plural = '  Fetched Facts'
@@ -113,7 +113,7 @@ class FactsDHIS2_IndicatorsMapped(models.Model):
 
     class Meta:
         managed = False
-        db_table = 'vw_fact_indicator_analytics'
+        db_table = 'vw_dhis2_indicator_facts'
         verbose_name = 'Mapped Fact'
         verbose_name_plural = ' Mapped Facts'
         
@@ -181,7 +181,7 @@ class FactsDHIS2_QueryParametersMapped(models.Model):
 
     class Meta:
         managed = False
-        db_table = 'vw_dhis2_query_parameters'
+        db_table = 'vw_dhis2_mapped_parameters'
         unique_together = ('id','pt',) 
         verbose_name = 'Parameter'
         verbose_name_plural = ' Mapped Parameters'
@@ -199,7 +199,7 @@ class DHIS2DCT_MapOrgunitLocations(models.Model):
 
     class Meta:
         managed = True
-        db_table = 'dhis2_ahodimat_map_orunitlocations'
+        db_table = 'dhis2_dct_mapped_orgunits'
         unique_together = ('orgunit','location',) #enforces unique constraint
         verbose_name = 'Country'
         verbose_name_plural = 'Map Countries'
@@ -222,11 +222,10 @@ class DHIS2DCT_LocationsMapped(models.Model):
 
     class Meta:
         managed = False
-        db_table = 'vw_ahodimat_locations_mapped'
+        db_table = 'vw_dhis2_mapped_dct_locations'
         verbose_name = 'Country'
         verbose_name_plural = 'Mapped Countries'
         ordering = ('location_name',)
-
 
 
 class DHIS2DCT_IndicatorsMapped(models.Model):
@@ -240,7 +239,7 @@ class DHIS2DCT_IndicatorsMapped(models.Model):
 
     class Meta:
         managed = False
-        db_table = 'vw_dhis2dct_indicators_mapped'
+        db_table = 'vw_dhis2_dct_mapped_indicators'
         verbose_name = 'Country'
         verbose_name_plural = 'Mapped Indicators'
         ordering = ('dct_indicator_name',)

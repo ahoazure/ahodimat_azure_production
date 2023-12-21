@@ -15,7 +15,7 @@ from django_apscheduler.jobstores import register_events,register_job
 from dctmetadata.views import (DCTMetadataManagementView as dctm,)
 from dhis2metadata.views import (DHIS2MetadataManagementView as dhisim,)
 from ghometadata.views import (GHOMetadataManagementView as ghomv,)
-from schema_mappings.views import (FactDataIndicatorViewSet as schema,)
+from dhis2_mappings.views import (FactDataIndicatorViewSet as schema,)
 
 from gho_mappings.views import (GHOIndicatiorFactsManagementView as ghofm,
   FactGHODataIndicatorViewSet as facts)
@@ -47,19 +47,20 @@ def start(): ## Add  jobs here using cron trigger instead of to interval.
   
         scheduler.add_job(dct_meta.mediators_dct_metadata,'cron',minute='*/30',
           jitter=30,id='Import DCT Metadata',replace_existing=True) 
-        scheduler.add_job(dhis_meta.mediators_dhis_metadata,'cron',minute='*/2',
+        scheduler.add_job(dhis_meta.mediators_dhis_metadata,'cron',minute='*/40',
           jitter=20,id='Import DHIS2 Metadata',replace_existing=True)
         
-        scheduler.add_job(gho_meta.mediators_gho_metadata,'cron',minute='*/55',
-          jitter=10,id='Import GHO Metadata',replace_existing=True)
+        scheduler.add_job(gho_meta.mediators_gho_metadata,'cron',minute='*/35',
+          jitter=30,id='Import GHO Metadata',replace_existing=True)
 
-        scheduler.add_job(gho_facts.mediators_gho_save_dataset,'cron',minute='*/35',
-          jitter=10,id='Import GHO Indicator Facts',replace_existing=True)
+        scheduler.add_job(gho_facts.mediators_gho_save_dataset,'cron',minute='*/1',
+          jitter=30,id='Import GHO Indicator Facts',replace_existing=True)
 
-        scheduler.add_job(fact_indicators.get_dhis_indicatorfacts,'cron',minute='*/2',
+        scheduler.add_job(fact_indicators.get_dhis_indicatorfacts,'cron',minute='*/45',
           jitter=60,id='Import DHIS2 Indicator Facts',replace_existing=True)    
-        scheduler.add_job(fact_indicators.post_dctfact_indicators,'cron',minute='*/3',
-          jitter=60,id='Export Mapped DHIS2 Facts to DCT',replace_existing=True)
+        
+        scheduler.add_job(fact_indicators.post_dctfact_indicators,'cron',minute='*/55',
+          jitter=30,id='Export Mapped DHIS2 Facts to DCT',replace_existing=True)
 
         scheduler.add_job(post_facts.post_ghofact_indicators,'cron',minute='*/59',
           jitter=60,id='Export GHO Mapped Facts to DCT',replace_existing=True)

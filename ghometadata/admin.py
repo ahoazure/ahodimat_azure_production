@@ -3,10 +3,10 @@ from django.contrib import admin
 from django.forms import TextInput,Textarea 
 from import_export.admin import ImportExportModelAdmin
 from .models import (GHOIndicators,GHOSpatialDimensionCountries,
-    GHOAPIConfigs,GHO_URLEndpointPath,GHO_URLEndpointPathMapped)
+    GHOMainConfigs,GHO_URLEndpointPath,GHO_URLEndpointPathMapped)
 
 
-@admin.register(GHOAPIConfigs)
+@admin.register(GHOMainConfigs)
 class ConfigAdmin(ImportExportModelAdmin):
     from django.db import models
    

@@ -99,13 +99,16 @@ class DCTMetadataManagementView(APIView):
             'Authorization': auth_dct,
             'Accept': "application/json",
             } 
+        # import pdb; pdb.set_trace()	
 
         try:  
             if 'indicators' in params['endpoint']: # removed logical expression to work with in operator
                 dcturl = params['url']+params['endpoint']
                 response = requests.request("GET",dcturl,data=payload,headers=headers)
                 payload = json.loads(response.text)
-                
+
+                # import pdb; pdb.set_trace()	
+
                 for child in payload['results']: #iterate to display all objects in the json array
                     indicator = DCTIndicators.objects.update_or_create(
                         id = int(child['afrocode'][3:]),					
@@ -158,8 +161,6 @@ class DCTMetadataManagementView(APIView):
                 response = requests.request("GET",dcturl,data=payload,headers=headers)
                 payload = json.loads(response.text)
                 
-                # import pdb; pdb.set_trace()	
-
                 for child in payload['results']: #iterate to display all objects in the json array
                     categoryoptions = DCT_Measuretype.objects.update_or_create(
                         id = int(child['code'][3:]),

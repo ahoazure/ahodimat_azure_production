@@ -3,11 +3,11 @@ from import_export.admin import ImportExportModelAdmin
 from django.forms import TextInput,Textarea
 
 from .models import (DHIS2Indicators,OrganizationUnits,
-        PeriodType,DHIS2_URLEndpointPath,DHIS2Configs,
+        PeriodType,DHIS2_URLEndpointPath,DHIS2MainConfigs,
         DHIS2_URLEndpointPathMapped)
 
 
-@admin.register(DHIS2Configs)
+@admin.register(DHIS2MainConfigs)
 class ConfigAdmin(ImportExportModelAdmin):
     from django.db import models
 

@@ -56,7 +56,7 @@ if os.path.isfile(dotenv_file):
 
 
 class FactDataIndicatorViewSet(viewsets.ReadOnlyModelViewSet):
-
+    
     queryset = FactsDHIS2_IndicatorsMapped.objects.all()
     serializer_class = FactDataIndicatorSerializer
     
@@ -109,16 +109,16 @@ class FactDataIndicatorViewSet(viewsets.ReadOnlyModelViewSet):
                 months_list.append(dt.strftime("%Y%m")) 
                 monthsrange = ";".join(months_list) # create semicolon-seperated list of monthly periods
             if param_id == 1:
-                dhisurl = dhisurl+'/analytics.json?dimension=dx:{dx}&dimension=ou:{ou}'.format_map(
+                dhisurl = dhisurl+'/api/analytics.json?dimension=dx:{dx}&dimension=ou:{ou}'.format_map(
                     params)+"&dimension=pe:"+yearsrange+"&includeNumDen=true" # get data using fixed annual periods	                       
             elif param_id == 2 or param_id==3:
-                dhisurl = dhisurl+'/analytics.json?dimension=dx:{dx}&dimension=ou:{ou}'.format_map(
+                dhisurl = dhisurl+'/api/analytics.json?dimension=dx:{dx}&dimension=ou:{ou}'.format_map(
                     params)+"&dimension=pe:"+monthsrange+"&includeNumDen=true" # get data using fixed annual periods	                                     
             elif param_id >= 4 and param_id <=7:
-                dhisurl = dhisurl+'/analytics.json?dimension=dx:{dx}&dimension=ou:{ou}&dimension=pe:{periodname}&includeNumDen=true'.format_map(
+                dhisurl = dhisurl+'/api/analytics.json?dimension=dx:{dx}&dimension=ou:{ou}&dimension=pe:{periodname}&includeNumDen=true'.format_map(
                     params)# to be formatted tp accept uids and dimensions consider the id ad params	
             else:
-                dhisurl = dhisurl+'/analytics.json?dimension=dx:{dx}&dimension=ou:{ou}'.format_map(
+                dhisurl = dhisurl+'/api/analytics.json?dimension=dx:{dx}&dimension=ou:{ou}'.format_map(
                     params)+"&dimension=pe:"+yearsrange+"&includeNumDen=true" # rawData endpoint allows retrieval of data using fixed periods	                      
                         
             response = requests.request("GET", dhisurl, data=payload, headers=headers,) #by-pass Cert verificartion
@@ -128,7 +128,8 @@ class FactDataIndicatorViewSet(viewsets.ReadOnlyModelViewSet):
     
         except (MySQLdb.IntegrityError, MySQLdb.OperationalError,MySQLdb.IntegrityError,
             IndexError,ValueError) as e: 
-            pass       
+            pass 
+      
         return Response(payload)	               		   
    
 
@@ -194,9 +195,19 @@ class FactDataIndicatorViewSet(viewsets.ReadOnlyModelViewSet):
             } 
         
         mediurl = MediatorConfigs.objects.values('mediator_url',
-            'mediator_port','status').get(status=1)     
-        mediatorurl = mediurl['mediator_url']+"/api/data/facts-indicators/"
-               
+            'mediator_port','status').get(status=1) 
+        
+        port = str(mediurl['mediator_port'])
+
+        # import pdb; pdb.set_trace()	
+
+        if port:
+            mediatorurl = mediurl['mediator_url']+":"+port+"/api/data/facts-indicators/"
+        else:
+           mediatorurl = mediurl['mediator_url']+"/api/data/facts-indicators/" 
+
+        # import pdb; pdb.set_trace()	
+        
         if mediatorurl:
             try:
               response = requests.request("GET", mediatorurl)
@@ -205,12 +216,14 @@ class FactDataIndicatorViewSet(viewsets.ReadOnlyModelViewSet):
             #   import pdb; pdb.set_trace()	
               data=self.mediators_post_factindicators(dct_dataurl,payload,headers) 
               print(data) 
-            #   import pdb; pdb.set_trace()	
        
               return Response(payload)                  
             except (MySQLdb.IntegrityError, MySQLdb.OperationalError,MySQLdb.IntegrityError,
                 IndexError,ValueError):
                pass
+        
+        # import pdb; pdb.set_trace()	
+
         return Response(payload)	
 
     """

@@ -1,0 +1,1 @@
+default_app_config = 'dhis2_mappings.apps.Dhis2MappingsConfig'

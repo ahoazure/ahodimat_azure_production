@@ -29,7 +29,7 @@ import MySQLdb # drivers for accessing the database exceptions
 
 # import dotenv # necessary for reading .env config files in .config
 from .models import (GHOIndicators,GHOSpatialDimensionCountries,
-    GHO_URLEndpointPath,GHO_URLEndpointPathMapped,GHOAPIConfigs)
+    GHO_URLEndpointPath,GHO_URLEndpointPathMapped,GHOMainConfigs)
 from . serializers import (GHO_URLEndpointPathMappedSerializer,)
 from authentication.models import MediatorConfigs # import server settings
 
@@ -67,7 +67,6 @@ class GHOMetadataManagementView(APIView):
             headers = { # modified headers to pass tenant header specific to MIFOS
             'Accept': "application/json",
             } 
-        # import pdb; pdb.set_trace()	
 
         try:  
             if params['id'] == 1 or 'COUNTRY' in params['endpoint']: 
@@ -91,10 +90,7 @@ class GHOMetadataManagementView(APIView):
                 status=1)
         username = params['username']
         password = params['password']
-        
-        # import pdb; pdb.set_trace()	
-
-        
+                
         if username or password: # checks whether the username and password are empty
             password = security.decrypt(password)
             authvars = username+":"+password

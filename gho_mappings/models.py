@@ -8,7 +8,7 @@ from dateutil.relativedelta import *
 import datetime
 
 from ghometadata.models import (GHOIndicators,GHOSpatialDimensionCountries,
-    GHOAPIConfigs,GHO_URLEndpointPath,GHO_URLEndpointPathMapped)
+    GHOMainConfigs,GHO_URLEndpointPath,GHO_URLEndpointPathMapped)
     
 from dhis2metadata.models import (PeriodType)
 from dctmetadata.models import (DCTIndicators,DCTLocations,
@@ -49,9 +49,9 @@ class GHO_IndicatorFacts(models.Model):
         blank=True, null=True) 
     class Meta:
         managed = True
-        db_table = 'gho_indicator_facts_extracted'
+        db_table = 'gho_fetched_indicator_facts'
         verbose_name = 'GHO Facts'
-        verbose_name_plural = '  Fetched Facts'
+        verbose_name_plural = '  GHO Facts'
         
     def __str__(self):
         return str(self.indicator) # to confirm later
@@ -94,9 +94,9 @@ class FactsGHO_IndicatorsMapped(models.Model):
 
     class Meta:
         managed = False
-        db_table = 'vw_gho_fact_indicators'
-        verbose_name = 'Stage Fact'
-        verbose_name_plural = ' Staged Facts'
+        db_table = 'vw_gho_indicators_facts'
+        verbose_name = 'Fetched Fact'
+        verbose_name_plural = ' Fetched Facts'
 
 
 class FactsGHODCT_Indicators(models.Model):
@@ -136,8 +136,8 @@ class FactsGHODCT_Indicators(models.Model):
 
     class Meta:
         managed = True
-        db_table = 'fact_ghodct_indicator_dataset'
-        unique_together = ('indicator','location','categoryoption','period',) #enforces concatenated unique constraint
+        db_table = 'gho_dct_mapped_indicator_facts'
+        unique_together = ('indicator','location','categoryoption','period',) # concatenated unique constraint
         verbose_name = 'GHO-DCT fact'
         verbose_name_plural = ' Map Facts'
         
@@ -193,6 +193,6 @@ class FactsGHO_IndicatorsViewMapped(models.Model):
 
     class Meta:
         managed = False
-        db_table = 'vw_postghodct_fact_indicators'
-        verbose_name = 'Map Fact'
-        verbose_name_plural = 'Mapped Facts'
+        db_table = 'vw_gho_mapped_dct_indicator_facts'
+        verbose_name = 'Mapped GHO-DCT Fact'
+        verbose_name_plural = 'Mapped GHO-DCT Facts'

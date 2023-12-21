@@ -11,7 +11,7 @@ from authentication.models import CustomUser
 # from mainconfigs.models import DHIS2UserLocation
 
 
-class WBGAPIConfigs(models.Model):   
+class WBGMainConfigs(models.Model):   
     CHOICES=((1,"Active"),(0,"Innactive"))
     url_regex = RegexValidator(
         regex=r'https?:\/\/(?:w{1,3}\.)?[^\s.]+(?:\.[a-z]+)*(?::\d+)?(?![^<]*(?:<\/\w+>|\/?>))',
@@ -31,7 +31,7 @@ class WBGAPIConfigs(models.Model):
     
     class Meta:
         managed = True
-        db_table = 'wbapi_odatapi_configs'
+        db_table = 'worldbank_main_configs'
         verbose_name = 'URL Setup'
         verbose_name_plural = ' WBGAPI URL'
         
@@ -86,7 +86,7 @@ class WorldBankCountries(models.Model):
 
     class Meta:
         managed = True
-        db_table = 'wb_afro_countries'
+        db_table = 'worldbank_countries'
         unique_together = ('code','name',) #enforces concatenated unique constraint
         verbose_name = 'Country'
         verbose_name_plural = 'Countries'

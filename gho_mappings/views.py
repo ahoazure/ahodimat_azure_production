@@ -28,7 +28,7 @@ import MySQLdb # drivers for accessing the database exceptions
 
 from dctmetadata.models import (DCT_URLEndpointPathMapped,)
 from ghometadata.models import (GHOIndicators,GHOSpatialDimensionCountries,
-    GHO_URLEndpointPath,GHO_URLEndpointPathMapped,GHOAPIConfigs)
+    GHO_URLEndpointPath,GHO_URLEndpointPathMapped,GHOMainConfigs)
 
 from .models import GHO_IndicatorFacts,FactsGHO_IndicatorsViewMapped
 from authentication.models import MediatorConfigs # import server settings
@@ -104,9 +104,10 @@ class GHOIndicatiorFactsManagementView(APIView):
             encodedBytes = base64.b64encode(authvars.encode("utf-8"))
             encodedStr = str(encodedBytes, "utf-8")
             auth_ghoapi = "Basic " + encodedStr
+            
             headers = { # modified headers to pass tenant header specific to MIFOS
-            'Authorization': auth_ghoapi,
-            'Accept': "application/json",
+                'Authorization': auth_ghoapi,
+                'Accept': "application/json",
             } 
         else:
             headers = { # modified headers to pass tenant header specific to MIFOS
@@ -119,7 +120,7 @@ class GHOIndicatiorFactsManagementView(APIView):
                 response = requests.request(
                     "GET",ghoapiurl,data=payload,headers=headers)
                 payload = json.loads(response.text)
-                          
+          
                 for child in payload['value']:
                     GHO_IndicatorFacts.objects.update_or_create(
                         indicator = child['IndicatorCode'],

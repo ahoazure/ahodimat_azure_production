@@ -10,14 +10,13 @@ import datetime
 from utilities import security # used to encrypt sensitive passwords
 
 from authentication.models import CustomUser
-# from mainconfigs.models import DHIS2UserLocation
 
 
 """
 This model makes it earsier to change the base URls for DHIS2.
 openHIM and the mediators.
 """
-class DHIS2Configs(models.Model):
+class DHIS2MainConfigs(models.Model):
     CHOICES=((1,"Active"),(0,"Innactive"))
 
     url_regex = RegexValidator(
@@ -37,7 +36,7 @@ class DHIS2Configs(models.Model):
     
     class Meta:
         managed = True
-        db_table = 'ahodhis2_configs'
+        db_table = 'dhis2_main_configs'
         verbose_name = 'DHIS2 Setup'
         verbose_name_plural = 'DHIS2 Settings'
         
@@ -49,10 +48,17 @@ class DHIS2Configs(models.Model):
         password = security.encrypt(self.dhis2_passkey)
         return password
 
+
+    def clean(self):
+        if (self.dhis2_url.endswith('/')):
+            raise ValidationError({'dhis2_url':_(
+                'Invalid Base URL. A valid DHIS2 Base URL should NOT have a \
+                    forward slash (/) at the end!')}) 
+        
+
     def save(self, *args, **kwargs):
         self.dhis2_passkey = self.encrypt_password()
-        super(DHIS2Configs, self).save(*args, **kwargs)
-
+        super(DHIS2MainConfigs, self).save(*args, **kwargs)
 
 
 
@@ -117,7 +123,7 @@ class PeriodType(models.Model):
 
     class Meta:
         managed = True
-        db_table = 'dhis2_period_type'
+        db_table = 'dhis2_periods'
         verbose_name = 'Period Type'
         verbose_name_plural = 'Period Types'
         ordering = ('id',)
@@ -137,7 +143,7 @@ class PeriodType(models.Model):
 class DHIS2_URLEndpointPath(models.Model):
     CHOICES=((1,"Active"),(0,"Innactive"))
     id = models.AutoField(primary_key=True)   
-    url = models.ForeignKey(DHIS2Configs, models.CASCADE,
+    url = models.ForeignKey(DHIS2MainConfigs, models.CASCADE,
         verbose_name = 'DHIS2 URL')
     api_endpoint = models.CharField(verbose_name='API Endpoint',
         max_length=250,blank=True,null=False)
@@ -150,9 +156,9 @@ class DHIS2_URLEndpointPath(models.Model):
 
     class Meta:
         managed = True
-        db_table = 'dhis2_path_endpoint'
-        verbose_name = 'Endpoint:'
-        verbose_name_plural = 'Map Endpoints'
+        db_table = 'dhis2_api_endpoints'
+        verbose_name = 'API Endpoint:'
+        verbose_name_plural = 'Map API Endpoints'
         ordering = ('url',)
 
     def __str__(self):
@@ -160,6 +166,10 @@ class DHIS2_URLEndpointPath(models.Model):
 
 
     def clean(self):
+        if not (self.api_endpoint.startswith('/')):
+            raise ValidationError({'api_endpoint':_(
+                'Invalid API Endpoint! A valid endpoint must start with a forward slash (/)')})    
+        
         if self.status:
             active = DHIS2_URLEndpointPath.objects.filter(status=1)
             if self.pk:
@@ -181,8 +191,8 @@ class DHIS2_URLEndpointPathMapped(models.Model):
 
     class Meta:
         managed = False
-        db_table = 'vw_dhis2_apipath_endpoint'
-        verbose_name = 'API Path'
-        verbose_name_plural = 'Mapped Endpoints'
-        ordering = ('id',)
+        db_table = 'vw_dhis2_mapped_api_endpoint'
+        verbose_name = 'Mapped API'
+        verbose_name_plural = 'Mapped API'
+        ordering = ('endpoint',)
         

@@ -10,7 +10,7 @@ from dctmetadata.views import (DCTAPIPathManagementView as dctpv,
 
 from ghometadata.views import (GHOMetadataManagementView as ghometa)
 
-from schema_mappings.views import (FactDataIndicatorViewSet as dataview,)
+from dhis2_mappings.views import (FactDataIndicatorViewSet as dataview,)
 from gho_mappings.views import (FactGHODataIndicatorViewSet as ghoview)
 from home import views as login_view
 
